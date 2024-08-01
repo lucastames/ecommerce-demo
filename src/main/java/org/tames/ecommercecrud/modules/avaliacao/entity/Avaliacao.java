@@ -2,6 +2,7 @@ package org.tames.ecommercecrud.modules.avaliacao.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import org.tames.ecommercecrud.modules.avaliacao.enums.Nota;
 
 import java.time.LocalDate;
@@ -10,17 +11,17 @@ import java.time.LocalDate;
 @Table(name = "avaliacao")
 public class Avaliacao {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @NotEmpty
     private String descricao;
 
-    @NotEmpty
+    @NotNull
     private LocalDate data;
 
     @Enumerated(EnumType.STRING)
-    @NotEmpty
+    @NotNull
     private Nota nota;
 
     public Avaliacao() {}
