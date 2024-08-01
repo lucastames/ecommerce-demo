@@ -1,9 +1,9 @@
 package org.tames.ecommercecrud.modules.avaliacao.enums;
 
 public enum Nota {
-    PESSIMO,
+    MUITO_RUIM,
     RUIM,
-    NEUTRO,
+    REGULAR,
     BOM,
     EXCELENTE
 }
