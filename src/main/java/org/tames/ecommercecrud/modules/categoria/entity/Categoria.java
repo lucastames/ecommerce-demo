@@ -8,10 +8,10 @@ import jakarta.validation.constraints.NotEmpty;
 public class Categoria {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotEmpty
-    String nome;
+    private String nome;
 
     public Categoria() {
     }
@@ -28,11 +28,11 @@ public class Categoria {
         this.id = id;
     }
 
-    public @NotEmpty String getNome() {
+    public String getNome() {
         return nome;
     }
 
-    public void setNome(@NotEmpty String nome) {
+    public void setNome(String nome) {
         this.nome = nome;
     }
 }
