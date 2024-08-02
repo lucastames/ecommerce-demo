@@ -2,6 +2,11 @@ package org.tames.ecommercecrud.modules.categoria.entity;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
+import org.hibernate.annotations.NaturalId;
+import org.tames.ecommercecrud.modules.produto.entity.Produto;
+
+import java.util.List;
+import java.util.Objects;
 
 @Entity
 @Table(name = "categoria")

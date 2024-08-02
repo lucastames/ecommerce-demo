@@ -3,27 +3,43 @@ package org.tames.ecommercecrud.modules.produto.entity;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
+import org.tames.ecommercecrud.modules.avaliacao.entity.Avaliacao;
+import org.tames.ecommercecrud.modules.categoria.entity.Categoria;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "produto")
 public class Produto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    Long id;
+    private Long id;
 
     @NotEmpty
-    String nome;
+    private String nome;
 
     @NotNull
-    BigDecimal preco;
+    private BigDecimal preco;
 
     @NotEmpty
-    String descricao;
+    private String descricao;
 
     @NotNull
-    Integer quantidadeEstoque;
+    private Integer quantidadeEstoque;
+
+    @ManyToMany()
+    @JoinTable(name = "produto_categoria", joinColumns = @JoinColumn(name = "id_produto"), inverseJoinColumns = @JoinColumn(name = "id_categoria"))
+    private Set<Categoria> categorias = new HashSet<>();
+
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_produto")
+    private List<Avaliacao> avaliacoes = new ArrayList<>();
 
     public Produto() {
     }
@@ -77,5 +93,13 @@ public class Produto {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public Set<Categoria> getCategorias() {
+        return categorias;
+    }
+
+    public List<Avaliacao> getAvaliacoes() {
+        return avaliacoes;
     }
 }
