@@ -36,7 +36,7 @@ public class PaymentMethodService {
     PaymentMethod paymentMethod =
         paymentMethodRepository
             .findById(paymentMethodId)
-            .orElseThrow(PaymentMethodNotFoundException::new);
+            .orElseThrow(() -> new PaymentMethodNotFoundException(paymentMethodId));
 
     return paymentMethodMapper.toDto(paymentMethod);
   }
@@ -56,7 +56,7 @@ public class PaymentMethodService {
     PaymentMethod paymentMethod =
         paymentMethodRepository
             .findById(paymentMethodId)
-            .orElseThrow(PaymentMethodNotFoundException::new);
+            .orElseThrow(() -> new PaymentMethodNotFoundException(paymentMethodId));
 
     paymentMethodMapper.updateFromDto(paymentMethod, savePaymentMethodRequestDto);
 
@@ -68,7 +68,7 @@ public class PaymentMethodService {
     PaymentMethod paymentMethod =
         paymentMethodRepository
             .findById(paymentMethodId)
-            .orElseThrow(PaymentMethodNotFoundException::new);
+            .orElseThrow(() -> new PaymentMethodNotFoundException(paymentMethodId));
 
     paymentMethodRepository.delete(paymentMethod);
   }
