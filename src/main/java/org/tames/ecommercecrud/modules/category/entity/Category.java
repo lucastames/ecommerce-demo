@@ -41,11 +41,11 @@ public class Category {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (!(o instanceof Category category)) return false;
-    return Objects.equals(name, category.name);
+    return id != null && Objects.equals(id, category.id);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hashCode(name);
+    return getClass().hashCode();
   }
 }
