@@ -11,9 +11,10 @@ import org.tames.ecommercecrud.modules.paymentmethod.entity.PaymentMethod;
 import org.tames.ecommercecrud.modules.paymentmethod.exception.PaymentMethodNotFoundException;
 import org.tames.ecommercecrud.modules.paymentmethod.mapper.PaymentMethodMapper;
 import org.tames.ecommercecrud.modules.paymentmethod.repository.PaymentMethodRepository;
-import org.tames.ecommercecrud.modules.paymentmethod.specification.PaymentMethodSpecification;
+import org.tames.ecommercecrud.modules.paymentmethod.specification.PaymentMethodSpecs.PaymentMethodFilter;
 
 @Service
+@Transactional(readOnly = true)
 public class PaymentMethodService {
   private final PaymentMethodRepository paymentMethodRepository;
   private final PaymentMethodMapper paymentMethodMapper;
@@ -25,9 +26,9 @@ public class PaymentMethodService {
   }
 
   public PagedModel<PaymentMethodResponseDto> getPaymentMethods(
-      Pageable pageable, PaymentMethodSpecification specification) {
+      Pageable pageable, PaymentMethodFilter filter) {
     Page<PaymentMethodResponseDto> paymentMethodPage =
-        paymentMethodRepository.findAll(specification, pageable).map(paymentMethodMapper::toDto);
+        paymentMethodRepository.findAll(filter, pageable).map(paymentMethodMapper::toDto);
 
     return new PagedModel<>(paymentMethodPage);
   }
