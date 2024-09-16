@@ -39,7 +39,7 @@ public class ProductMapper {
     return product;
   }
 
-  public void updateEntityFromDto(
+  public void updateFromDto(
       Product product, SaveProductRequestDto saveProductRequestDto, Set<Category> categories) {
     product.setDescription(saveProductRequestDto.description());
     product.setName(saveProductRequestDto.name());

@@ -2,9 +2,9 @@ package org.tames.ecommercecrud.modules.product.service;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.stream.Collectors;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedModel;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.tames.ecommercecrud.modules.category.entity.Category;
@@ -15,10 +15,11 @@ import org.tames.ecommercecrud.modules.product.entity.Product;
 import org.tames.ecommercecrud.modules.product.exception.ProductNotFoundException;
 import org.tames.ecommercecrud.modules.product.mapper.ProductMapper;
 import org.tames.ecommercecrud.modules.product.repository.ProductRepository;
+import org.tames.ecommercecrud.modules.product.specification.ProductSpecs.ProductFilter;
 
 @Service
+@Transactional(readOnly = true)
 public class ProductService {
-  private static final Logger log = LogManager.getLogger(ProductService.class);
   private final ProductRepository productRepository;
   private final CategoryRepository categoryRepository;
   private final ProductMapper productMapper;
@@ -32,9 +33,15 @@ public class ProductService {
     this.productMapper = productMapper;
   }
 
-  public ProductResponseDto getProductById(Long id) {
-    log.info("Get product by ID: {}", id);
+  public PagedModel<ProductResponseDto> getProducts(
+      Pageable pageable, ProductFilter specification) {
+    Page<ProductResponseDto> productPage =
+        productRepository.findAll(specification, pageable).map(productMapper::toDto);
 
+    return new PagedModel<>(productPage);
+  }
+
+  public ProductResponseDto getProductById(Long id) {
     Product product =
         productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
 
@@ -43,13 +50,8 @@ public class ProductService {
 
   @Transactional
   public ProductResponseDto createProduct(SaveProductRequestDto saveProductRequestDto) {
-    log.info("Creating new product");
-
     Set<Category> categories =
-        saveProductRequestDto.categoryIds().stream()
-            .map(categoryRepository::getReferenceById)
-            .collect(Collectors.toSet());
-
+        new HashSet<>(categoryRepository.findAllById(saveProductRequestDto.categoryIds()));
     Product product = productMapper.toEntity(saveProductRequestDto, categories);
 
     return productMapper.toDto(productRepository.save(product));
@@ -57,23 +59,21 @@ public class ProductService {
 
   @Transactional
   public ProductResponseDto updateProduct(Long id, SaveProductRequestDto saveProductRequestDto) {
-    log.info("Updating product with ID: {}", id);
-
     Product product =
         productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
     Set<Category> categories =
         new HashSet<>(categoryRepository.findAllById(saveProductRequestDto.categoryIds()));
-    productMapper.updateEntityFromDto(product, saveProductRequestDto, categories);
+
+    productMapper.updateFromDto(product, saveProductRequestDto, categories);
 
     return productMapper.toDto(productRepository.save(product));
   }
 
   @Transactional
   public void deleteProductById(Long id) {
-    log.info("Deleting product with ID: {}", id);
-
     Product product =
         productRepository.findById(id).orElseThrow(() -> new ProductNotFoundException(id));
+
     productRepository.delete(product);
   }
 }

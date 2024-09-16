@@ -1,12 +1,13 @@
 package org.tames.ecommercecrud.modules.product.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
 import java.math.BigDecimal;
 import java.util.*;
 import org.tames.ecommercecrud.modules.category.entity.Category;
-import org.tames.ecommercecrud.modules.review.entity.Review;
 
 @Entity
 @Table(name = "product")
@@ -17,11 +18,13 @@ public class Product {
 
   @NotEmpty private String name;
 
-  @NotNull private BigDecimal price;
+  @NotNull @Positive private BigDecimal price;
 
   @NotEmpty private String description;
 
-  @NotNull private Integer stockQuantity;
+  @NotNull
+  @Min(0)
+  private Integer stockQuantity;
 
   @ManyToMany
   @JoinTable(
@@ -30,7 +33,7 @@ public class Product {
       inverseJoinColumns = @JoinColumn(name = "category_id"))
   private Set<Category> categories = new HashSet<>();
 
-  @OneToMany(mappedBy = "product")
+  @OneToMany(mappedBy = "product", cascade = CascadeType.REMOVE, orphanRemoval = true)
   private List<Review> reviews = new ArrayList<>();
 
   public Product() {}
