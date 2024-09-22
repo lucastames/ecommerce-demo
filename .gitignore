@@ -3,6 +3,10 @@ target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+src/**/resources/jwt-private.pem
+src/**/resources/jwt-public.pem
+src/**/resources/refresh-private.pem
+src/**/resources/refresh-public.pem
 
 ### STS ###
 .apt_generated

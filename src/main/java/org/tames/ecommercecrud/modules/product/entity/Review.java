@@ -41,13 +41,6 @@ public class Review {
     this.user = user;
   }
 
-  public Review(String description, LocalDate date, Rating rating, User user) {
-    this.description = description;
-    this.date = date;
-    this.rating = rating;
-    this.user = user;
-  }
-
   public Long getId() {
     return id;
   }
