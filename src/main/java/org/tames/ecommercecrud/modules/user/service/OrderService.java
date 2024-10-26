@@ -15,6 +15,7 @@ import org.tames.ecommercecrud.modules.paymentmethod.entity.PaymentMethod;
 import org.tames.ecommercecrud.modules.paymentmethod.exception.PaymentMethodNotFoundException;
 import org.tames.ecommercecrud.modules.paymentmethod.repository.PaymentMethodRepository;
 import org.tames.ecommercecrud.modules.product.entity.Product;
+import org.tames.ecommercecrud.modules.product.exception.ProductOutOfStockException;
 import org.tames.ecommercecrud.modules.product.repository.ProductRepository;
 import org.tames.ecommercecrud.modules.user.dto.ItemRequestDto;
 import org.tames.ecommercecrud.modules.user.dto.OrderResponseDto;
@@ -74,15 +75,18 @@ public class OrderService {
             .orElseThrow(
                 () -> new PaymentMethodNotFoundException(saveOrderRequestDto.paymentMethodId()));
 
-    List<Product> products =
-        productRepository.findAllById(
-            saveOrderRequestDto.items().stream().map(ItemRequestDto::productId).toList());
     Map<Long, Product> productMap =
-        products.stream().collect(Collectors.toMap(Product::getId, Function.identity()));
+        productRepository
+            .findAllById(
+                saveOrderRequestDto.items().stream().map(ItemRequestDto::productId).toList())
+            .stream()
+            .collect(Collectors.toMap(Product::getId, Function.identity()));
     List<Item> items =
         saveOrderRequestDto.items().stream()
             .map(item -> itemMapper.toEntity(item, productMap.get(item.productId())))
             .toList();
+
+    items.forEach(this::validateProductStock);
 
     Order order = orderMapper.toEntity(paymentMethod, user, items);
     return orderMapper.toDto(orderRepository.save(order));
@@ -103,5 +107,15 @@ public class OrderService {
     }
 
     return order;
+  }
+
+  private void validateProductStock(Item item) {
+    Product product = item.getProduct();
+    int remainingStock = product.getStockQuantity() - item.getQuantity();
+
+    if (remainingStock < 0) {
+      throw new ProductOutOfStockException(product.getId());
+    }
+    product.setStockQuantity(remainingStock);
   }
 }
